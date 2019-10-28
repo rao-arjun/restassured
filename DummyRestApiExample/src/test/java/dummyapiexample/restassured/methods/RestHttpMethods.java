@@ -3,6 +3,11 @@ package dummyapiexample.restassured.methods;
 import static io.restassured.RestAssured.*;
 import static io.restassured.matcher.RestAssuredMatchers.*;
 
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+
 import io.restassured.builder.RequestSpecBuilder;
 import io.restassured.builder.ResponseSpecBuilder;
 import io.restassured.http.ContentType;
@@ -24,6 +29,7 @@ public class RestHttpMethods {
 	private RequestSpecification requestSpec;
 	private ResponseSpecification responseSpec;
 	
+	private static ValidatableResponse vResponse;
 	private static Response response;
 	private static int statusCode;
 	private static String responseHeader;
@@ -33,18 +39,14 @@ public class RestHttpMethods {
 		requestSpec = new RequestSpecBuilder().setBaseUri(apiUrl).setAccept(ContentType.JSON).build();
 		responseSpec = new ResponseSpecBuilder().expectContentType(ContentType.JSON).build();
 	}
-	
-	/*//GET /employees status code
-	public int returnStatusCodeForGetAllEmployees(){
-		return given().log().all().spec(requestSpec).
-		when().get(resourcePathEmployees).
-		then().extract().response().statusCode();
-	}*/
-	
+
 	public int returnStatusCode(){
 		return statusCode;
 	}
 	
+	public String returnResponseAsString(){
+		return response.asString();
+	}
 	public String returnResponseHeaders(){
 		return responseHeader;
 	}
@@ -54,62 +56,61 @@ public class RestHttpMethods {
 	}
 	
 	//GET /employees response
-	public String getAllEmployeesRecords(){
-		ValidatableResponse vResponse = given().log().all().spec(requestSpec).
+	public void getAllEmployeesRecords(){
+		vResponse = given().log().all().spec(requestSpec).
 				when().get(resourcePathGetEmployees).
 				then();
 		responseCount = vResponse.extract().jsonPath().getList("$").size();
 		response = vResponse.extract().response();
 		statusCode = response.statusCode();
 		responseHeader = response.headers().toString();
-		return response.asString();
 	}
 	
 	//GET /employees/{id} response
-	public String getSpecificEmployeeIdRecord(String employeeId){
-		response =  given().log().all().spec(requestSpec).pathParam("id",employeeId).
+	public void getSpecificEmployeeIdRecord(String generatedEmployeeId){
+		response =  given().log().all().spec(requestSpec).pathParam("id",generatedEmployeeId).
 		when().get(resourcePathGetEmployeeId).
 		then().extract().response();
 		statusCode = response.statusCode();
-		return response.asString();
 	}
 	
 	// POST /create response
-	public String createEmployee(String name, String salary, String age){
+	public void createEmployee(String name, String salary, int age){
 		Employee employee = new Employee(name, salary, age);
 		response = given().log().all().spec(requestSpec).contentType("application/json").body(employee).
 				when().post(resourcePathCreateEmployees).
 				then().extract().response();
 		statusCode = response.statusCode();
-		responseHeader = response.headers().toString();
-		return response.asString();
-		
+		responseHeader = response.headers().toString();		
 	}
 	
 	//DELETE /delete/{id} response
-	public String deleteEmployeeRecord(String employeeId){
+	public void deleteEmployeeRecord(String employeeId){
 		response = given().log().all().spec(requestSpec).pathParam("id",employeeId).
 		when().delete(resourcePathDeleteEmployeeId).
 		then().extract().response();
 		statusCode = response.statusCode();
-		return response.asString();
 	}
 
 	//PUT /update/{id} response
-	public String updateEmployeeRecord(String employeeId, String name, String salary, String age){
+	public void updateEmployeeRecord(String employeeId, String name, String salary, int age){
 		Employee employee = new Employee(name, salary, age);
 		response = given().log().all().spec(requestSpec).pathParam("employeeId",employeeId).contentType("application/json").body(employee).
 		when().put(resourcePathUpdateEmployeeId).
 		then().extract().response();
 		statusCode = response.statusCode();
-		return response.asString();
 	}
 	
 	public boolean verifyValueOfAFieldForEmployeeId(String employeeId, String fieldName, String fieldValue){
 		return given().log().all().spec(requestSpec).pathParam("id",employeeId).
 		when().get(resourcePathGetEmployeeId).
-		then().extract().response().path(fieldName).equals(fieldValue);
+		then().extract().response().jsonPath().getString(fieldName).equalsIgnoreCase(fieldValue);
 	}
 	
-	
+	public String getGeneratedEmployeeIdOfLatestRecord(){
+		List<Object> jsonList = response.jsonPath().getList("$");
+		HashMap<?, ?> hMap = (HashMap<?, ?>) jsonList.get(responseCount-1);
+		System.out.println(hMap.entrySet());
+		return (String) hMap.get("id");
+	}
 }

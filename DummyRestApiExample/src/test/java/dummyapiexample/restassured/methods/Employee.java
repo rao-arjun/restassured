@@ -8,12 +8,12 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 public class Employee {
 	private String name;
 	private String salary;
-	private String age;
+	private int age;
 	
-	public Employee(String sName, String sSalary, String sAge){
+	public Employee(String sName, String sSalary, int  age){
 		this.name = sName;
 		this.salary = sSalary;
-		this.age =sAge;
+		this.age = age;
 	}
 	
 	public String getName(){
@@ -24,7 +24,7 @@ public class Employee {
 		return salary;
 	}
 	
-	public String getAge(){
+	public int getAge(){
 		return age;
 	}
 }

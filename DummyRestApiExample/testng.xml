@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <suite name="Suite" parallel="false">
-  <test name="Test">
+  <test name="CRUD tests">
     <classes>
-      <class name="dummyapiexample.restassured.tests.RestAPIExampleTests"/>
+      <class name="dummyapiexample.restapi.tests.RestAPIExampleTests"/>
     </classes>
   </test> <!-- Test -->
 </suite> <!-- Suite -->

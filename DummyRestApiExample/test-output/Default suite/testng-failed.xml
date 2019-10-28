@@ -7,7 +7,7 @@
         <methods>
           <include name="beforeTest"/>
           <include name="afterTest"/>
-          <include name="getSpecificEmployeeIdRecordInvalid"/>
+          <include name="createValidateModifyAndDeleteEmployeeRecord"/>
         </methods>
       </class> <!-- dummyapiexample.restapi.tests.RestAPIExampleTests -->
     </classes>
